@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        hit: [HIT 1, HIT 2, HIT 3, HIT 4, HIT 5, HIT 6, HIT 7, HIT 8]
+        hit: [HIT1, HIT2, HIT3, HIT4, HIT5, HIT6, HIT7, HIT8]
 
     steps:
 
