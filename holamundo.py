@@ -1,2 +1,0 @@
-#holamundo
-print("Hola mundo")
