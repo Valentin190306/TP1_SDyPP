@@ -3,8 +3,7 @@
 import unittest
 import threading
 import time
-from HIT1_Cliente import cliente_saludar
-from HIT1_Servidor import iniciar_servidor
+from HIT1_App import iniciar_servidor, cliente_saludar
 
 class TestTCP(unittest.TestCase):
 
