@@ -34,10 +34,10 @@ jobs:
       - name: Install lint
         run: pip install flake8
 
-      - name: Lint code
-        run: flake8 .
-
       - name: Run HIT test
         run: |
           echo "Running test for ${{ matrix.hit }}"
           python3 "${{ matrix.hit }}/Tests/${{ matrix.hit }}_Test.py"
+
+      - name: Lint code
+        run: flake8 .
