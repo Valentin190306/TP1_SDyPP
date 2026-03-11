@@ -3,6 +3,13 @@ venv/
 .venv/
 env/
 
+# Seguridad [Variables de entorno / secretos]
+.env
+.env.*
+*.key
+*.pem
+secrets.*
+
 # Python cache
 __pycache__/
 *.py[cod]
