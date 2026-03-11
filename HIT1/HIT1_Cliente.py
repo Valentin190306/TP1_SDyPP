@@ -6,7 +6,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Logger import configurar_logging
-logger = configurar_logging("HIT1_cliente", "hit1_cliente.log")
+logger = configurar_logging("HIT1_cliente", "HIT1/logs/hit1_cliente.log")
 
 def cliente_saludar(host, port, mensaje):
 
