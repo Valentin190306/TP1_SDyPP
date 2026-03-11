@@ -1,0 +1,37 @@
+name: HIT Test Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  test-hits:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        hit: [HIT1, HIT2, HIT3, HIT4, HIT5, HIT6, HIT7, HIT8]
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+            python -m pip install --upgrade pip
+            if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+            fi
+
+      - name: Run HIT test
+        run: |
+          echo "Running test for ${{ matrix.hit }}"
+          python "${{ matrix.hit }}/Tests/${{ matrix.hit }}_Test.py"
