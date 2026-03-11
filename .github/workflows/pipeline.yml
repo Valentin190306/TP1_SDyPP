@@ -26,12 +26,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-            python -m pip install --upgrade pip
-            if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-            fi
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+          fi
+
+      - name: Install lint
+        run: pip install flake8
+
+      - name: Lint code
+        run: flake8 .
 
       - name: Run HIT test
         run: |
           echo "Running test for ${{ matrix.hit }}"
-          python "${{ matrix.hit }}/Tests/${{ matrix.hit }}_Test.py"
+          python3 "${{ matrix.hit }}/Tests/${{ matrix.hit }}_Test.py"
