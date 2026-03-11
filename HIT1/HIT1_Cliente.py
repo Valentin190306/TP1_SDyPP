@@ -1,7 +1,10 @@
 # #Fuente: ChatGPT
 
 import socket
+import sys
+import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Logger import configurar_logging
 logger = configurar_logging("HIT1_cliente", "hit1_cliente.log")
 
