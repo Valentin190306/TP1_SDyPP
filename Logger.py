@@ -1,23 +1,31 @@
 import logging
-from logging.handlers import MemoryHandler
+import os
+
 
 def configurar_logging(nombre_app="app", archivo_log="app.log"):
-    
+
+    carpeta = os.path.dirname(archivo_log)
+    if carpeta and not os.path.exists(carpeta):
+        os.makedirs(carpeta, exist_ok=True)
+
     logger = logging.getLogger(nombre_app)
     logger.setLevel(logging.INFO)
 
-    formato = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    if not logger.handlers:
 
-    # Handler para archivo (disco)
-    file_handler = logging.FileHandler(archivo_log)
-    file_handler.setFormatter(formato)
+        formato = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
 
-    # Handler en memoria
-    memory_handler = MemoryHandler(capacity=1000, target=file_handler)
+        file_handler = logging.FileHandler(archivo_log)
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(formato)
 
-    logger.addHandler(memory_handler)
-    logger.addHandler(file_handler)
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(formato)
+
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
 
     return logger

@@ -5,8 +5,13 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+def ruta_log(nombre_archivo):
+    base = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base, "logs", nombre_archivo)
+
 from Logger import configurar_logging
-logger = configurar_logging("HIT1_servidor", "HIT1/logs/hit1_servidor.log")
+logger = configurar_logging("HIT1_servidor", ruta_log("hit1_servidor.log"))
 
 def iniciar_servidor(host="127.0.0.1", port=5001):
 

@@ -5,8 +5,13 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+def ruta_log(nombre_archivo):
+    base = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base, "logs", nombre_archivo)
+
 from Logger import configurar_logging
-logger = configurar_logging("HIT1_cliente", "HIT1/logs/hit1_cliente.log")
+logger = configurar_logging("HIT1_cliente", ruta_log("hit1_cliente.log"))
 
 def cliente_saludar(host, port, mensaje):
 
@@ -25,3 +30,4 @@ def cliente_saludar(host, port, mensaje):
         logger.info(f"Respuesta recibida: {respuesta}")
 
         return respuesta
+     
