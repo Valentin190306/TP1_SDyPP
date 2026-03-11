@@ -1,9 +1,15 @@
 # test_tcp.py
 
+import sys
+import os
 import unittest
 import threading
 import time
-from HIT1_App import iniciar_servidor, cliente_saludar
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from HIT1_Cliente import cliente_saludar
+from HIT1_Servidor import iniciar_servidor
+
 
 class TestTCP(unittest.TestCase):
 

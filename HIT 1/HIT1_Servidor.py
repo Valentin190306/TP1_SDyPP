@@ -1,22 +1,45 @@
-#Fuente: ChatGPT
+# #Fuente: ChatGPT
+
+# import socket
+
+# HOST = "0.0.0.0"   # Escucha en todas las interfaces
+# PORT = 5000        # Puerto del servidor
+
+# with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as servidor:
+#     servidor.bind((HOST, PORT))
+#     servidor.listen()
+
+#     print("Servidor B esperando conexión...")
+
+#     conn, addr = servidor.accept()
+#     with conn:
+#         print("Conectado por:", addr)
+
+#         mensaje = conn.recv(1024).decode()
+#         print("Saludo recibido:", mensaje)
+
+#         respuesta = "Hola A, aquí B. Saludo recibido."
+#         conn.sendall(respuesta.encode())
 
 import socket
 
-HOST = "0.0.0.0"   # Escucha en todas las interfaces
-PORT = 5000        # Puerto del servidor
+def iniciar_servidor(host="127.0.0.1", port=5001):
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as servidor:
-    servidor.bind((HOST, PORT))
-    servidor.listen()
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as servidor:
 
-    print("Servidor B esperando conexión...")
+        servidor.bind((host, port))
+        servidor.listen()
 
-    conn, addr = servidor.accept()
-    with conn:
-        print("Conectado por:", addr)
+        print("Servidor B esperando conexión...")
 
-        mensaje = conn.recv(1024).decode()
-        print("Saludo recibido:", mensaje)
+        conn, addr = servidor.accept()
 
-        respuesta = "Hola A, aquí B. Saludo recibido."
-        conn.sendall(respuesta.encode())
+        with conn:
+            print("Conectado por:", addr)
+
+            mensaje = conn.recv(1024).decode()
+            print("Saludo recibido:", mensaje)
+
+            respuesta = f"B recibió: {mensaje}"
+
+            conn.sendall(respuesta.encode())
