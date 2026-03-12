@@ -1,5 +1,3 @@
-# #Fuente: ChatGPT
-
 import socket
 import time
 import sys
@@ -12,41 +10,57 @@ def ruta_log(nombre_archivo):
     return os.path.join(base, "logs", nombre_archivo)
 
 from Logger import configurar_logging
-logger = configurar_logging("HIT2_cliente", ruta_log("hit2_cliente.log"))
+logger = configurar_logging("HIT1_cliente", ruta_log("hit1_cliente.log"))
+
+HOST = "127.0.0.1"
+PORT = 5001
 
 
-def cliente_con_reconexion(host="127.0.0.1", port=5001):
+def conectar():
 
     while True:
 
         try:
-            logger.info(f"Intentando conectar a {host}:{port}")
 
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as cliente:
+            cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            cliente.connect((HOST, PORT))
 
-                cliente.connect((host, port))
-                logger.info("Conectado al servidor")
+            logger.info("Conectado al servidor")
 
-                while True:
+            return cliente
 
-                    mensaje = input("Mensaje: ")
+        except ConnectionRefusedError:
 
-                    cliente.sendall(mensaje.encode())
-                    logger.info(f"Mensaje enviado: {mensaje}")
+            logger.warning("Servidor no disponible, reintentando...")
+            time.sleep(2)
 
-                    data = cliente.recv(1024)
 
-                    if not data:
-                        raise ConnectionError("Servidor cerró la conexión")
+def cliente():
 
-                    respuesta = data.decode()
+    cliente = conectar()
 
-                    logger.info(f"Respuesta recibida: {respuesta}")
-                    print(respuesta)
+    while True:
 
-        except Exception as e:
+        try:
 
-            logger.warning(f"Conexión perdida: {e}")
-            logger.info("Reintentando en 3 segundos...")
+            mensaje = input("Mensaje: ")
 
-            time.sleep(3)
+            cliente.sendall(mensaje.encode())
+
+            respuesta = cliente.recv(1024)
+
+            if not respuesta:
+                raise ConnectionResetError
+
+            logger.info("Servidor: %s", respuesta.decode())
+
+        except (ConnectionResetError, BrokenPipeError):
+
+            logger.error("Conexión perdida. Reconectando...")
+
+            cliente.close()
+            cliente = conectar()
+
+
+if __name__ == "__main__":
+    cliente()
