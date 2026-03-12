@@ -10,7 +10,7 @@ def ruta_log(nombre_archivo):
     return os.path.join(base, "logs", nombre_archivo)
 
 from Logger import configurar_logging
-logger = configurar_logging("HIT1_cliente", ruta_log("hit1_cliente.log"))
+logger = configurar_logging("HIT2_cliente", ruta_log("hit2_cliente.log"))
 
 HOST = "127.0.0.1"
 PORT = 5001
@@ -60,6 +60,33 @@ def cliente():
 
             cliente.close()
             cliente = conectar()
+
+def cliente_saludar(host, port, mensaje):
+
+    logger.info(f"Intentando conectar a {host}:{port}")
+
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as cliente:
+
+            cliente.connect((host, port))
+            logger.info("Conexión establecida con el servidor")
+
+            logger.info(f"Enviando mensaje: {mensaje}")
+            cliente.sendall(mensaje.encode())
+
+            respuesta = cliente.recv(1024).decode()
+
+            logger.info(f"Respuesta recibida del servidor: {respuesta}")
+
+            return respuesta
+
+    except ConnectionRefusedError:
+        logger.error("No se pudo conectar al servidor")
+        raise
+
+    except Exception as e:
+        logger.error(f"Error durante la comunicación: {e}")
+        raise
 
 
 if __name__ == "__main__":

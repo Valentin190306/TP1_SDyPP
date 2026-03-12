@@ -42,7 +42,7 @@ def manejar_cliente(conn, addr):
         logger.info(f"Conexión cerrada {addr}")
 
 
-def iniciar_servidor():
+def iniciar_servidor(HOST="127.0.0.1", PORT=5001):
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as servidor:
 
