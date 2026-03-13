@@ -143,7 +143,7 @@ def main():
     puerto_remoto = int(sys.argv[4])
 
     nombre_nodo = f"NodoC_{mi_puerto}"
-    logger = configurar_logging(nombre_nodo, ruta_log(f"nodo_c_{mi_puerto}.log"))
+    logger = configurar_logging(nombre_nodo, ruta_log(f"hit5_nodo_c_{mi_puerto}.log"))
 
     logger.info(f"Iniciando nodo {nombre_nodo}")
 
