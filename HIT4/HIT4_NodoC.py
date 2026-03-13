@@ -87,6 +87,8 @@ def conectar(host_remoto, puerto_remoto, logger):
 def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
     sock = conectar(host_remoto, puerto_remoto, logger)
 
+    respuesta_txt = None
+
     try:
         # Saludo fijo que envía este nodo al conectarse
         saludo = f"Hola! Soy el nodo en {mi_host}:{mi_puerto}"
