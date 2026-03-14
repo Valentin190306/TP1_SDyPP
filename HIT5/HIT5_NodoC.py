@@ -15,7 +15,6 @@ def ruta_log(nombre_archivo):
 
 from Logger import configurar_logging
 
-
 # Servidor: escucha y responde saludos entrantes
 
 def manejar_cliente(conn, addr, logger):
@@ -142,7 +141,7 @@ def main():
     host_remoto   = sys.argv[3]
     puerto_remoto = int(sys.argv[4])
 
-    nombre_nodo = f"NodoC_{mi_puerto}"
+    nombre_nodo = f"HIT5_NodoC_{mi_puerto}"
     logger = configurar_logging(nombre_nodo, ruta_log(f"hit5_nodo_c_{mi_puerto}.log"))
 
     logger.info(f"Iniciando nodo {nombre_nodo}")
