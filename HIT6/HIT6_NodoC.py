@@ -167,7 +167,7 @@ def registrarse_en_D(host_D, puerto_D, mi_ip, mi_puerto, logger):
 
 def main():
 
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         print("Uso: python nodo_c.py <ip_registry_D> <puerto_registry_D>")
         sys.exit(1)
 

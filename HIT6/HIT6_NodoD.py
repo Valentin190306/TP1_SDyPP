@@ -48,7 +48,6 @@ def register():
     })
     
 
-
 @app.route("/health", methods=["GET"])
 def health():
 
