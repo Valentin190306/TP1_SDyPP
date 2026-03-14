@@ -14,10 +14,12 @@ def ruta_log(nombre_archivo):
 
 from Logger import configurar_logging
 
+# Logger del módulo: se configura una vez en main() o queda nulo si se importa desde tests
+#logger = configurar_logging("NodoC", ruta_log("nodo_c.log"))
 
-# Servidor
 
-def manejar_cliente(conn, addr, logger):
+
+def manejar_cliente(conn, addr):
     logger.info(f"[SERVIDOR] Cliente conectado: {addr}")
 
     try:
@@ -45,7 +47,7 @@ def manejar_cliente(conn, addr, logger):
         logger.info(f"[SERVIDOR] Conexión cerrada con {addr}")
 
 
-def iniciar_servidor(host, port, logger):
+def iniciar_servidor(host, port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as servidor:
         servidor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         servidor.bind((host, port))
@@ -58,7 +60,7 @@ def iniciar_servidor(host, port, logger):
                 conn, addr = servidor.accept()
                 thread = threading.Thread(
                     target=manejar_cliente,
-                    args=(conn, addr, logger),
+                    args=(conn, addr),
                     daemon=True
                 )
                 thread.start()
@@ -67,9 +69,8 @@ def iniciar_servidor(host, port, logger):
                 logger.error(f"[SERVIDOR] Error en accept(): {e}")
 
 
-# Cliente 
 
-def conectar(host_remoto, puerto_remoto, logger):
+def conectar(host_remoto, puerto_remoto):
     while True:
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -82,8 +83,8 @@ def conectar(host_remoto, puerto_remoto, logger):
             time.sleep(2)
 
 
-def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
-    sock = conectar(host_remoto, puerto_remoto, logger)
+def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto):
+    sock = conectar(host_remoto, puerto_remoto)
     respuesta_txt = None
 
     try:
@@ -108,7 +109,7 @@ def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
     return respuesta_txt
 
 
-# Main 
+# Main
 
 def main():
     if len(sys.argv) != 5:
@@ -123,6 +124,8 @@ def main():
     host_remoto   = sys.argv[3]
     puerto_remoto = int(sys.argv[4])
 
+    # Reconfigurar el logger del módulo con el nombre y archivo correctos para este nodo
+    global logger
     nombre_nodo = f"NodoC_{mi_puerto}"
     logger = configurar_logging(nombre_nodo, ruta_log(f"nodo_c_{mi_puerto}.log"))
 
@@ -130,7 +133,7 @@ def main():
 
     hilo_servidor = threading.Thread(
         target=iniciar_servidor,
-        args=(mi_host, mi_puerto, logger),
+        args=(mi_host, mi_puerto),
         daemon=True,
         name=f"{nombre_nodo}-servidor"
     )
@@ -140,7 +143,7 @@ def main():
 
     hilo_cliente = threading.Thread(
         target=iniciar_cliente,
-        args=(mi_host, mi_puerto, host_remoto, puerto_remoto, logger),
+        args=(mi_host, mi_puerto, host_remoto, puerto_remoto),
         daemon=True,
         name=f"{nombre_nodo}-cliente"
     )
