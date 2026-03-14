@@ -15,7 +15,7 @@ def ruta_log(nombre_archivo):
 from Logger import configurar_logging
 
 
-# Servidor: escucha y responde saludos entrantes
+# Servidor
 
 def manejar_cliente(conn, addr, logger):
     logger.info(f"[SERVIDOR] Cliente conectado: {addr}")
@@ -26,7 +26,6 @@ def manejar_cliente(conn, addr, logger):
         if data:
             mensaje = data.decode()
             logger.info(f"[SERVIDOR] {addr} -> {mensaje}")
-            print(f"[SERVIDOR] Saludo recibido de {addr}: '{mensaje}'")
 
             respuesta = f"Hola! Soy el nodo en {logger.name}, recibí tu saludo."
             conn.sendall(respuesta.encode())
@@ -53,7 +52,6 @@ def iniciar_servidor(host, port, logger):
         servidor.listen()
 
         logger.info(f"[SERVIDOR] Escuchando en {host}:{port}")
-        print(f"[SERVIDOR] Escuchando en {host}:{port}")
 
         while True:
             try:
@@ -69,7 +67,7 @@ def iniciar_servidor(host, port, logger):
                 logger.error(f"[SERVIDOR] Error en accept(): {e}")
 
 
-# Cliente: conecta y manda saludo automáticamente
+# Cliente 
 
 def conectar(host_remoto, puerto_remoto, logger):
     while True:
@@ -86,22 +84,17 @@ def conectar(host_remoto, puerto_remoto, logger):
 
 def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
     sock = conectar(host_remoto, puerto_remoto, logger)
-
     respuesta_txt = None
 
     try:
-        # Saludo fijo que envía este nodo al conectarse
         saludo = f"Hola! Soy el nodo en {mi_host}:{mi_puerto}"
         sock.sendall(saludo.encode())
-        logger.info(f"[CLIENTE] Saludo enviado: '{saludo}'")
-        print(f"[CLIENTE] Saludo enviado a {host_remoto}:{puerto_remoto}: '{saludo}'")
+        logger.info(f"[CLIENTE] Saludo enviado a {host_remoto}:{puerto_remoto}: '{saludo}'")
 
-        # Espera la respuesta del otro nodo
         respuesta = sock.recv(1024)
         if respuesta:
             respuesta_txt = respuesta.decode()
-            logger.info(f"[CLIENTE] Respuesta recibida: {respuesta_txt}")
-            print(f"[CLIENTE] Respuesta de {host_remoto}:{puerto_remoto}: '{respuesta_txt}'")
+            logger.info(f"[CLIENTE] Respuesta recibida: '{respuesta_txt}'")
 
     except (ConnectionResetError, BrokenPipeError):
         logger.error("[CLIENTE] Conexión perdida al saludar")
@@ -115,12 +108,14 @@ def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
     return respuesta_txt
 
 
+# Main 
+
 def main():
     if len(sys.argv) != 5:
-        print("Uso: python nodo_c.py <mi_host> <mi_puerto> <host_remoto> <puerto_remoto>")
+        print("Uso: python HIT4_NodoC.py <mi_host> <mi_puerto> <host_remoto> <puerto_remoto>")
         print("Ejemplo:")
-        print("  Terminal 1: python nodo_c.py 127.0.0.1 5001 127.0.0.1 5002")
-        print("  Terminal 2: python nodo_c.py 127.0.0.1 5002 127.0.0.1 5001")
+        print("  Terminal 1: python HIT4_NodoC.py 127.0.0.1 5001 127.0.0.1 5002")
+        print("  Terminal 2: python HIT4_NodoC.py 127.0.0.1 5002 127.0.0.1 5001")
         sys.exit(1)
 
     mi_host       = sys.argv[1]
@@ -131,9 +126,8 @@ def main():
     nombre_nodo = f"NodoC_{mi_puerto}"
     logger = configurar_logging(nombre_nodo, ruta_log(f"nodo_c_{mi_puerto}.log"))
 
-    logger.info(f"Iniciando nodo {nombre_nodo}")
+    logger.info(f"Iniciando nodo {nombre_nodo} | propio={mi_host}:{mi_puerto} | remoto={host_remoto}:{puerto_remoto}")
 
-    # Thread del servidor: escucha conexiones entrantes
     hilo_servidor = threading.Thread(
         target=iniciar_servidor,
         args=(mi_host, mi_puerto, logger),
@@ -142,10 +136,8 @@ def main():
     )
     hilo_servidor.start()
 
-    # Pequeña espera para que ambos servidores estén listos antes de conectar
     time.sleep(1)
 
-    # Thread del cliente: conecta, saluda y termina
     hilo_cliente = threading.Thread(
         target=iniciar_cliente,
         args=(mi_host, mi_puerto, host_remoto, puerto_remoto, logger),

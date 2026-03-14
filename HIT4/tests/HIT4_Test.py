@@ -6,7 +6,8 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from HIT4_NodoC import iniciar_servidor, iniciar_cliente
+from HIT4_NodoC import iniciar_servidor, iniciar_cliente, ruta_log
+from Logger import configurar_logging
 
 HOST_C1 = "127.0.0.1"
 PORT_C1 = 5001
@@ -16,16 +17,18 @@ PORT_C2 = 5002
 
 
 
-def make_logger(nombre):
-    logger = logging.getLogger(nombre)
+def make_logger_silencioso(nombre):
+    """Logger silencioso para el cliente en tests: no imprime nada en consola."""
+    logger = logging.getLogger(f"test_{nombre}")
     logger.setLevel(logging.DEBUG)
-    if not logger.handlers:
-        logger.addHandler(logging.StreamHandler())
+    logger.addHandler(logging.NullHandler())
     return logger
 
 
 def levantar_servidor(host, port):
-    logger = make_logger(f"NodoC_{port}")
+    """Usa configurar_logging igual que main() para que se genere el archivo de log."""
+    nombre_nodo = f"NodoC_{port}"
+    logger = configurar_logging(nombre_nodo, ruta_log(f"nodo_c_{port}.log"))
     iniciar_servidor(host, port, logger)
 
 
@@ -50,7 +53,7 @@ def test_c1_saluda_a_c2():
     """Canal rojo del diagrama: C1 conecta al servidor de C2 y recibe respuesta."""
     arrancar_servidores()
 
-    logger = make_logger("NodoC_5001")
+    logger = make_logger_silencioso("NodoC_5001")
     respuesta = iniciar_cliente(HOST_C1, PORT_C1, HOST_C2, PORT_C2, logger)
 
     assert respuesta is not None, "C1 no recibió respuesta de C2"
@@ -62,7 +65,7 @@ def test_c2_saluda_a_c1():
     """Canal azul del diagrama: C2 conecta al servidor de C1 y recibe respuesta."""
     arrancar_servidores()
 
-    logger = make_logger("NodoC_5002")
+    logger = make_logger_silencioso("NodoC_5002")
     respuesta = iniciar_cliente(HOST_C2, PORT_C2, HOST_C1, PORT_C1, logger)
 
     assert respuesta is not None, "C2 no recibió respuesta de C1"
@@ -78,11 +81,11 @@ def test_ambos_canales_simultaneos():
     resultado_c2 = {"respuesta": None}
 
     def cliente_c1():
-        logger = make_logger("NodoC_5001")
+        logger = make_logger_silencioso("NodoC_5001")
         resultado_c1["respuesta"] = iniciar_cliente(HOST_C1, PORT_C1, HOST_C2, PORT_C2, logger)
 
     def cliente_c2():
-        logger = make_logger("NodoC_5002")
+        logger = make_logger_silencioso("NodoC_5002")
         resultado_c2["respuesta"] = iniciar_cliente(HOST_C2, PORT_C2, HOST_C1, PORT_C1, logger)
 
     t1 = threading.Thread(target=cliente_c1, daemon=True)
@@ -106,7 +109,7 @@ def test_reconexion():
     """
     arrancar_servidores()
 
-    logger = make_logger("NodoC_5001")
+    logger = make_logger_silencioso("NodoC_5001")
 
     # Primera conexión
     respuesta1 = iniciar_cliente(HOST_C1, PORT_C1, HOST_C2, PORT_C2, logger)
