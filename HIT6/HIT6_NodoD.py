@@ -41,15 +41,20 @@ def register():
         "puerto": puerto
     }
 
+    logger.info(f"Nuevo nodo registrado: {nodos[clave]}")
+
     return jsonify({
         "nodos": nodos_existentes
     })
+    
 
 
 @app.route("/health", methods=["GET"])
 def health():
 
     uptime = time.time() - start_time
+
+    logger.info(f"Salud del servicio - Uptime: {uptime}, Nodos registrados: {len(nodos)}")
 
     return jsonify({
         "status": "ok",

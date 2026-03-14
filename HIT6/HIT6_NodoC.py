@@ -38,8 +38,17 @@ def manejar_cliente(conn, addr, logger):
 
             conn.sendall(json.dumps(respuesta).encode())
 
+    except (ConnectionResetError, BrokenPipeError):
+        logger.warning(f"[SERVIDOR] Cliente {addr} se desconectó abruptamente")
+
+    except OSError as e:
+        logger.error(f"[SERVIDOR] Error de socket con {addr}: {e}")
+
     finally:
-        conn.close()
+        try:
+            conn.close()
+        except OSError:
+            pass
         logger.info(f"[SERVIDOR] Conexión cerrada con {addr}")
 
 
@@ -55,17 +64,20 @@ def iniciar_servidor(host, logger):
     servidor.listen()
 
     logger.info(f"[SERVIDOR] Escuchando en {host}:{puerto}")
-    print(f"[SERVIDOR] Escuchando en {host}:{puerto}")
 
     def aceptar():
         while True:
-            conn, addr = servidor.accept()
-            thread = threading.Thread(
-                target=manejar_cliente,
-                args=(conn, addr, logger),
-                daemon=True
-            )
-            thread.start()
+            try: 
+                conn, addr = servidor.accept()
+                thread = threading.Thread(
+                    target=manejar_cliente,
+                    args=(conn, addr, logger),
+                    daemon=True
+                )
+                thread.start()
+            
+            except OSError as e:
+                logger.error(f"[SERVIDOR] Error en accept(): {e}")
 
     threading.Thread(target=aceptar, daemon=True).start()
 
@@ -75,16 +87,16 @@ def iniciar_servidor(host, logger):
 # ---------------- CLIENTE ----------------
 
 def conectar(host_remoto, puerto_remoto, logger):
+    while True:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((host_remoto, puerto_remoto))
+            logger.info(f"[CLIENTE] Conectado a {host_remoto}:{puerto_remoto}")
+            return sock
 
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((host_remoto, puerto_remoto))
-        logger.info(f"[CLIENTE] Conectado a {host_remoto}:{puerto_remoto}")
-        return sock
-
-    except ConnectionRefusedError:
-        logger.warning(f"[CLIENTE] {host_remoto}:{puerto_remoto} no disponible")
-        return None
+        except ConnectionRefusedError:
+            logger.warning(f"[CLIENTE] {host_remoto}:{puerto_remoto} no disponible, reintentando en 2s...")
+            time.sleep(2)
 
 
 def saludar(host_remoto, puerto_remoto, logger):
@@ -110,11 +122,17 @@ def saludar(host_remoto, puerto_remoto, logger):
         if respuesta:
             respuesta_json = json.loads(respuesta.decode())
             logger.info(f"[CLIENTE] Respuesta recibida: {respuesta_json}")
-            print(f"[CLIENTE] Respuesta de {host_remoto}:{puerto_remoto}: {respuesta_json}")
+
+    except (ConnectionResetError, BrokenPipeError):
+        logger.error("[CLIENTE] Conexión perdida al saludar")
+
+    except OSError as e:
+        logger.error(f"[CLIENTE] Error de red: {e}")
 
     finally:
         sock.close()
 
+    return respuesta_json
 
 # ---------------- REGISTRY ----------------
 
@@ -157,12 +175,12 @@ def main():
     puerto_D = int(sys.argv[2])
 
     mi_host = "127.0.0.1"
-
-    logger = configurar_logging("NodoC", ruta_log("nodo_c.log"))
-
+    
+    logger = configurar_logging("NodoC", ruta_log("hit6_nodo_c_p.log"))
+    
     # iniciar servidor en puerto aleatorio
     mi_puerto = iniciar_servidor(mi_host, logger)
-
+    
     time.sleep(1)
 
     # registrarse en D
