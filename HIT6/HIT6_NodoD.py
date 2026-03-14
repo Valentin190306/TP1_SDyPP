@@ -10,6 +10,11 @@ def ruta_log(nombre_archivo):
 
 from Logger import configurar_logging
 
+logger = configurar_logging(
+    nombre_app="NodoD",
+    archivo_log=ruta_log("hit6_nodo_d.log")
+)
+
 app = Flask(__name__)
 
 # registro en RAM
@@ -63,7 +68,6 @@ def health():
 
 
 if __name__ == "__main__":
-    logger = configurar_logging(nombre_app="NodoD", archivo_log=ruta_log("hit6_nodo_d.log"))
     logger.info("[NODO D] Servicio de registro iniciado en el puerto 8000")
     app.run(host="0.0.0.0", port=8000)
 

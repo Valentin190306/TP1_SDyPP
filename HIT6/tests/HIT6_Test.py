@@ -14,7 +14,7 @@ HOST_D = "127.0.0.1"
 HOST_C = "127.0.0.1"
 PORT_D = 8000
 
-puertos = []
+puertos = {}
 
 def levantar_nodo_c(id):
     nombre_nodo = f"HIT6_NodoC_{id}"
@@ -23,6 +23,16 @@ def levantar_nodo_c(id):
 
 
 _servidores_iniciados = False
+
+def esperar_registry():
+    for _ in range(20):
+        try:
+            r = requests.get(f"http://{HOST_D}:{PORT_D}/health", timeout=1)
+            if r.status_code == 200:
+                return
+        except:
+            pass
+        time.sleep(0.2)
 
 def arrancar_nodos():
     """Levanta C1 y C2 como servidores en threads daemon (solo una vez)."""
@@ -74,20 +84,21 @@ def consulta_endpoint_health():
         r = requests.get(url, timeout=5)
 
         if r.status_code != 200:
-            print.error(f"Error consultando /health: {r.status_code}")
+            print(f"Error consultando /health: {r.status_code}")
             return None
 
         data = r.json()
-        print.info(f"Respuesta de /health: {data}")
+        print(f"Respuesta de /health: {data}")
         return data
 
     except requests.RequestException as e:
-        print.error(f"No se pudo contactar a D: {e}")
+        print(f"No se pudo contactar a D: {e}")
         return None
    
 
 
 if __name__ == "__main__":
+    esperar_registry()
     arrancar_nodos()
     
     print("=" * 50)
