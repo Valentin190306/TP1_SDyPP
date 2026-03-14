@@ -53,25 +53,21 @@ def arrancar_nodos():
 
 
 def validar_respuesta_json(respuesta):
-    """Verifica que la respuesta tenga la estructura esperada."""
     assert isinstance(respuesta, dict), f"Respuesta no es JSON válido: {respuesta}"
 
-    assert "tipo" in respuesta, "Falta campo 'tipo'"
-    assert "nodo" in respuesta, "Falta campo 'nodo'"
-    assert "mensaje" in respuesta, "Falta campo 'mensaje'"
-
-    assert respuesta["tipo"] == "respuesta", f"Tipo inesperado: {respuesta}"
+    assert "nodos" in respuesta, "Falta campo 'nodos'"
+    assert isinstance(respuesta["nodos"], list), "El campo 'nodos' debe ser una lista"
 
 
 def recepcion_registro_nodos():
-    """Canal rojo: C1 conecta al servidor de C2."""
-
     for id in range(1, 3):
         nombre_nodo = f"HIT6_NodoC_{id}"
         logger = configurar_logging(nombre_nodo, ruta_log(f"hit6_nodo_c_{id}.log"))
+
         respuesta = registrarse_en_D(HOST_D, PORT_D, HOST_C, puertos[id], logger)
 
         assert respuesta is not None, f"C{id} no recibió respuesta de D"
+
         validar_respuesta_json(respuesta)
 
         print(f"[OK] Registro recibido en Nodo C{id}: {respuesta}")

@@ -156,7 +156,7 @@ def registrarse_en_D(host_D, puerto_D, mi_ip, mi_puerto, logger):
 
         logger.info(f"Nodos recibidos del registry: {data}")
 
-        return data.get("nodos", [])
+        return data
 
     except requests.RequestException as e:
         logger.error(f"No se pudo contactar a D: {e}")
