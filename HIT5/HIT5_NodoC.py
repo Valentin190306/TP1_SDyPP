@@ -57,7 +57,6 @@ def iniciar_servidor(host, port, logger):
         servidor.listen()
 
         logger.info(f"[SERVIDOR] Escuchando en {host}:{port}")
-        print(f"[SERVIDOR] Escuchando en {host}:{port}")
 
         while True:
             try:
@@ -104,8 +103,7 @@ def iniciar_cliente(host, port, remote_host, remote_port, logger):
         # Serializar a JSON y enviar
         sock.sendall(json.dumps(mensaje).encode())
 
-        logger.info(f"[CLIENTE] Saludo enviado: {mensaje}")
-        print(f"[CLIENTE] Saludo enviado a {remote_host}:{remote_port}: {mensaje}")
+        logger.info(f"[CLIENTE] Saludo enviado a {remote_host}:{remote_port}: {mensaje}")
 
         # Esperar respuesta
         respuesta = sock.recv(1024)
@@ -113,8 +111,7 @@ def iniciar_cliente(host, port, remote_host, remote_port, logger):
         if respuesta:
             respuesta_json = json.loads(respuesta.decode())
 
-            logger.info(f"[CLIENTE] Respuesta recibida: {respuesta_json}")
-            print(f"[CLIENTE] Respuesta de {remote_host}:{remote_port}: {respuesta_json}")
+            logger.info(f"[CLIENTE] Respuesta recibida de {remote_host}:{remote_port}: {respuesta_json}")
 
     except (ConnectionResetError, BrokenPipeError):
         logger.error("[CLIENTE] Conexión perdida al saludar")
@@ -172,7 +169,6 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         logger.info(f"Nodo {nombre_nodo} apagado por el usuario")
-        print(f"\nNodo {nombre_nodo} apagado.")
 
 
 if __name__ == "__main__":
