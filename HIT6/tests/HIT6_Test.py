@@ -44,7 +44,7 @@ def arrancar_nodos():
     t_registry.daemon = True
     t_registry.start()
 
-    for id in range(1, 3):
+    for id in range(1, 4):
         t = threading.Thread(target=levantar_nodo_c, args=(id,), daemon=True)
         t.start()
     
@@ -60,7 +60,7 @@ def validar_respuesta_json(respuesta):
 
 
 def recepcion_registro_nodos():
-    for id in range(1, 3):
+    for id in range(1, 4):
         nombre_nodo = f"HIT6_NodoC_{id}"
         logger = configurar_logging(nombre_nodo, ruta_log(f"hit6_nodo_c_{id}.log"))
 
