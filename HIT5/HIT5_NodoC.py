@@ -7,17 +7,17 @@ import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-def ruta_log(nombre_archivo):
+def ruta_log(file):
     base = os.path.dirname(os.path.abspath(__file__))
     logs_dir = os.path.join(base, "logs")
     os.makedirs(logs_dir, exist_ok=True)
-    return os.path.join(logs_dir, nombre_archivo)
+    return os.path.join(logs_dir, file)
 
 from Logger import configurar_logging
 
 # Servidor: escucha y responde saludos entrantes
 
-def manejar_cliente(conn, addr, logger):
+def manejar_cliente(conn, addr, logger, host, port):
     logger.info(f"[SERVIDOR] Cliente conectado: {addr}")
 
     try:
@@ -31,7 +31,7 @@ def manejar_cliente(conn, addr, logger):
             respuesta = {
                 "tipo": "respuesta",
                 "nodo": logger.name,
-                "mensaje": f"Hola {mensaje_json['nodo']}, recibí tu saludo"
+                "mensaje": f"Hola {mensaje_json['nodo']}, soy el nodo en {host}:{port} y recibí tu saludo"
             }
 
             conn.sendall(json.dumps(respuesta).encode())
@@ -64,7 +64,7 @@ def iniciar_servidor(host, port, logger):
                 conn, addr = servidor.accept()
                 thread = threading.Thread(
                     target=manejar_cliente,
-                    args=(conn, addr, logger),
+                    args=(conn, addr, logger, host, port),
                     daemon=True
                 )
                 thread.start()
@@ -75,21 +75,21 @@ def iniciar_servidor(host, port, logger):
 
 # Cliente: conecta y manda saludo automáticamente
 
-def conectar(host_remoto, puerto_remoto, logger):
+def conectar(remote_host, remote_port, logger):
     while True:
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((host_remoto, puerto_remoto))
-            logger.info(f"[CLIENTE] Conectado a {host_remoto}:{puerto_remoto}")
+            sock.connect((remote_host, remote_port))
+            logger.info(f"[CLIENTE] Conectado a {remote_host}:{remote_port}")
             return sock
 
         except ConnectionRefusedError:
-            logger.warning(f"[CLIENTE] {host_remoto}:{puerto_remoto} no disponible, reintentando en 2s...")
+            logger.warning(f"[CLIENTE] {remote_host}:{remote_port} no disponible, reintentando en 2s...")
             time.sleep(2)
 
 
-def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
-    sock = conectar(host_remoto, puerto_remoto, logger)
+def iniciar_cliente(host, port, remote_host, remote_port, logger):
+    sock = conectar(remote_host, remote_port, logger)
 
     respuesta_json = None
 
@@ -98,14 +98,14 @@ def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
         mensaje = {
             "tipo": "saludo",
             "nodo": logger.name,
-            "mensaje": "Hola!"
+            "mensaje": f"Hola! Soy el nodo en {host}:{port}"
         }
 
         # Serializar a JSON y enviar
         sock.sendall(json.dumps(mensaje).encode())
 
         logger.info(f"[CLIENTE] Saludo enviado: {mensaje}")
-        print(f"[CLIENTE] Saludo enviado a {host_remoto}:{puerto_remoto}: {mensaje}")
+        print(f"[CLIENTE] Saludo enviado a {remote_host}:{remote_port}: {mensaje}")
 
         # Esperar respuesta
         respuesta = sock.recv(1024)
@@ -114,7 +114,7 @@ def iniciar_cliente(mi_host, mi_puerto, host_remoto, puerto_remoto, logger):
             respuesta_json = json.loads(respuesta.decode())
 
             logger.info(f"[CLIENTE] Respuesta recibida: {respuesta_json}")
-            print(f"[CLIENTE] Respuesta de {host_remoto}:{puerto_remoto}: {respuesta_json}")
+            print(f"[CLIENTE] Respuesta de {remote_host}:{remote_port}: {respuesta_json}")
 
     except (ConnectionResetError, BrokenPipeError):
         logger.error("[CLIENTE] Conexión perdida al saludar")
