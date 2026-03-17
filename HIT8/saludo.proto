@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package saludo;
+
+// Mensaje de saludo (lo que envía el cliente)
+message Saludo {
+    string tipo   = 1;
+    string nodo   = 2;
+    string mensaje = 3;
+}
+
+// Respuesta del servidor
+message Respuesta {
+    string tipo    = 1;
+    string nodo    = 2;
+    string mensaje = 3;
+}
+
+// Servicio que expone el nodo C como servidor gRPC
+service NodoService {
+    rpc Saludar (Saludo) returns (Respuesta);
+}
