@@ -187,7 +187,7 @@ def main():
     nodos = registrarse_en_D(host_D, puerto_D, mi_host, mi_puerto, logger)
 
     # conectarse a todos los nodos existentes
-    for nodo in nodos:
+    for nodo in nodos["nodos"]:
         if (nodo["ip"] == mi_host and nodo["puerto"] == mi_puerto):
             continue
 
