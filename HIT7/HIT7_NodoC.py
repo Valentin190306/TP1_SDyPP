@@ -176,7 +176,7 @@ def main():
 
     mi_host = "127.0.0.1"
     
-    logger = configurar_logging("NodoC", ruta_log("hit6_nodo_c_p.log"))
+    logger = configurar_logging("NodoC", ruta_log("hit7_nodo_c_p.log"))
     
     # iniciar servidor en puerto aleatorio
     mi_puerto = iniciar_servidor(mi_host, logger)

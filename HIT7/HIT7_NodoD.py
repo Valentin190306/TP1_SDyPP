@@ -14,11 +14,11 @@ from Logger import configurar_logging
 
 logger = configurar_logging(
     nombre_app="NodoD",
-    archivo_log=ruta_log("hit6_nodo_d.log")
+    archivo_log=ruta_log("hit7_nodo_d.log")
 )
 
-RUTA_SLOT_ACTUAL = "slot_actual.json"
-RUTA_SIG_SLOT = "sig_slot.json"
+RUTA_SIG_SLOT = ruta_log("sig_slot.json")
+RUTA_SLOT_ACTUAL = ruta_log("slot_actual.json")
 
 def guardar_json(ruta, datos):
     with open(ruta, "w", encoding="utf-8") as f:
@@ -96,9 +96,14 @@ def health():
         "uptime": uptime
     })
 
+def iniciar_servicio():
+    guardar_json(RUTA_SLOT_ACTUAL, slot_actual)
+    guardar_json(RUTA_SIG_SLOT, sig_slot)
+
+    rotador = threading.Thread(target=rotar_slots, daemon=True)
+    rotador.start()
 
 if __name__ == "__main__":
-    logger.info("[NODO D] Servicio de registro iniciado en el puerto 8000")
-    rotador_thread = threading.Thread(target=rotar_slots, daemon=True).start()
+    iniciar_servicio()
     app.run(host="0.0.0.0", port=8000)
 
