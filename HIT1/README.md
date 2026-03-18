@@ -5,7 +5,3 @@ Elabore un código de servidor TCP para B que espere el saludo de A y lo respond
 Elabore un código de cliente TCP para A que se conecte con B y lo salude.
 
 ## Instrucciones para ejecutar el proyecto:
-
-## Diagrama de arquitectura
-
-## Decisiones de diseño tomadas.
