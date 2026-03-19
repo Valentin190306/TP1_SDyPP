@@ -78,7 +78,7 @@ def register():
     logger.info(f"Nuevo nodo registrado: {sig_slot[clave]}")
 
     return jsonify({
-        "nodos": list(slot_actual.values())
+        "nodos": list(sig_slot.values())
     })
     
 
