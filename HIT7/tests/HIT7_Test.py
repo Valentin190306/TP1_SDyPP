@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from HIT7_NodoC import iniciar_servidor, registrarse_en_D, ruta_log
-from HIT7_NodoD import app, iniciar_servicio
+from HIT7_NodoD import app, iniciar_servicio, inicializar_estado
 from Logger import configurar_logging
 
 HOST_D = "127.0.0.1"
@@ -20,7 +20,6 @@ def levantar_nodo_c(id):
     nombre_nodo = f"HIT7_NodoC_{id}"
     logger = configurar_logging(nombre_nodo, ruta_log(f"hit7_nodo_c_{id}.log"))
     puertos[id] = iniciar_servidor(HOST_D, logger)
-
 
 _servidores_iniciados = False
 
@@ -97,15 +96,16 @@ def test_consulta_endpoint_health():
         return None
    
 def test_ventanas_inscripcion():
-
-    print("[INFO] esperando primera rotación del sistema...")
-    time.sleep(65)
+    inicializar_estado()
 
     logger1 = configurar_logging("NodoC1", ruta_log("hit7_nodo_c_1.log"))
     logger2 = configurar_logging("NodoC2", ruta_log("hit7_nodo_c_2.log"))
     logger3 = configurar_logging("NodoC3", ruta_log("hit7_nodo_c_3.log"))
 
     r1 = registrarse_en_D(HOST_D, PORT_D, HOST_C, puertos[1], logger1)
+    
+    time.sleep(1)
+    
     r2 = registrarse_en_D(HOST_D, PORT_D, HOST_C, puertos[2], logger2)
 
     print("[INFO] C1 y C2 registrados")

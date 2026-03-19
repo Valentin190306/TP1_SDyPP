@@ -1,6 +1,7 @@
 import os
 import time
 from flask import Flask, request, jsonify
+from threading import Lock
 
 def ruta_log(nombre_archivo):
     base = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +20,7 @@ app = Flask(__name__)
 
 # registro en RAM
 nodos = {}
+nodos_lock = Lock()  # para asegurar acceso concurrente seguro a la estructura de nodos
 
 # tiempo de inicio del servicio
 start_time = time.time()
@@ -37,14 +39,15 @@ def register():
 
     clave = f"{ip}:{puerto}"
 
-    # lista de nodos existentes (antes de agregar el nuevo)
-    nodos_existentes = list(nodos.values())
+    with nodos_lock:
+        # lista de nodos existentes (antes de agregar el nuevo)
+        nodos_existentes = list(nodos.values())
 
-    # registrar el nodo nuevo
-    nodos[clave] = {
-        "ip": ip,
-        "puerto": puerto
-    }
+        # registrar el nodo nuevo
+        nodos[clave] = {
+            "ip": ip,
+            "puerto": puerto
+        }
 
     logger.info(f"Nuevo nodo registrado: {nodos[clave]}")
 
@@ -60,11 +63,12 @@ def health():
 
     logger.info(f"Salud del servicio - Uptime: {uptime}, Nodos registrados: {len(nodos)}")
 
-    return jsonify({
-        "status": "ok",
-        "nodos_registrados": len(nodos),
-        "uptime": uptime
-    })
+    with nodos_lock:
+        return jsonify({
+            "status": "ok",
+            "nodos_registrados": len(nodos),
+            "uptime": uptime
+        })
 
 
 if __name__ == "__main__":
