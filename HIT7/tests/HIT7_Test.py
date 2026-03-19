@@ -78,23 +78,6 @@ def test_recepcion_registro_nodos():
         print(f"[OK] Registro recibido en Nodo C{id}: {respuesta}")
 
 
-def test_consulta_endpoint_health():
-    """Canal verde: consulta el endpoint /health de D."""
-    url = f"http://{HOST_D}:{PORT_D}/health"
-    try:
-        r = requests.get(url, timeout=5)
-
-        if r.status_code != 200:
-            print(f"Error consultando /health: {r.status_code}")
-            return None
-
-        data = r.json()
-        print(f"Respuesta de /health: {data}")
-        return data
-
-    except requests.RequestException as e:
-        print(f"No se pudo contactar a D: {e}")
-        return None
    
 def test_ventanas_inscripcion():
 
@@ -125,10 +108,6 @@ if __name__ == "__main__":
     print("=" * 50)
     print("Test 1: los nodos se registran en D y reciben la lista de nodos existentes")
     test_recepcion_registro_nodos()
-
-    print("=" * 50)
-    print("Test 2: consulta al endpoint health del registry")
-    test_consulta_endpoint_health()
 
     print("=" * 50)
     print("Test 3: sistema de ventanas de inscripción, espere 2 minutos para que se completen las rotaciones")

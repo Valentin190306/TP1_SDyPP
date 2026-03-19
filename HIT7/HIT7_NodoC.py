@@ -185,13 +185,13 @@ def consultar_subscriptos_en_D(host_D, puerto_D, logger):
         return []
 
 
-def iniciar_cliente(host_D, puerto_D, mi_host, mi_puerto, logger):
+def iniciar_cliente(host_D, puerto_D, mi_host, mi_puerto, logger, stop_event):
 
     nodos_subscriptos = registrarse_en_D(host_D, puerto_D, mi_host, mi_puerto, logger)
 
     time.sleep(1)
 
-    while True:
+    while not stop_event.is_set():
 
         if nodos_subscriptos:
             logger.info(f"Nodos subscriptos actualmente en D: {nodos_subscriptos}")
@@ -210,11 +210,14 @@ def iniciar_cliente(host_D, puerto_D, mi_host, mi_puerto, logger):
                     daemon=True
                 ).start()
         
-        time.sleep(60)
+        stop_event.wait(60)
+        
+        if stop_event.is_set():
+            break
 
         nodos_subscriptos = consultar_subscriptos_en_D(host_D, puerto_D, logger)
 
-    return nodos
+    return nodos_subscriptos
 
 # ---------------- MAIN ----------------
 
@@ -229,18 +232,18 @@ def main():
 
     mi_host = "127.0.0.1"
     
+    stop_event = threading.Event()
+    
     logger = configurar_logging("NodoC", ruta_log("hit7_nodo_c_p.log"))
     
     # iniciar servidor en puerto aleatorio
     mi_puerto = iniciar_servidor(mi_host, logger)
         
-    iniciar_cliente(host_D, puerto_D, mi_host, mi_puerto, logger)
-
     try:
-        while True:
-            time.sleep(1)
+        iniciar_cliente(host_D, puerto_D, mi_host, mi_puerto, logger, stop_event)
     except KeyboardInterrupt:
         print("Nodo C detenido")
+        stop_event.set()
 
 
 if __name__ == "__main__":
