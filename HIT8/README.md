@@ -169,3 +169,27 @@ Reducción      : 31.2%
 Latencia gRPC — promedio: X.XXXms | min: X.XXXms | max: X.XXXms
 ```
 
+---
+
+### 8. Datos relevados
+
+Equipo de prueba:
+* SO: Debian 13 (Trixie)
+* Procesador: AMD Ryzen 7 5700G
+* RAM: 8 GB
+
+Resultados:
+```bash
+==================================================
+Test 5: Comparación tamaño mensajes (JSON vs Protobuf)
+Tamaño JSON    : 95 bytes
+Tamaño Protobuf: 62 bytes
+Reducción      : 34.7%
+Comparación de tamaño OK
+==================================================
+```
+
+Medidas de latencia:
+```bash
+Latencia gRPC — promedio: 1.072ms | min: 0.959ms | max: 1.32ms
+```
