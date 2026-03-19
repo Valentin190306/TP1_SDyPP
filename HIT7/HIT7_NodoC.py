@@ -163,6 +163,59 @@ def registrarse_en_D(host_D, puerto_D, mi_ip, mi_puerto, logger):
         return []
 
 
+def consultar_subscriptos_en_D(host_D, puerto_D, logger):
+
+    url = f"http://{host_D}:{puerto_D}/nodos_subscriptos"
+
+    try:
+        r = requests.get(url)
+
+        if r.status_code != 200:
+            logger.error(f"Error consultando nodos subscriptos en D: {r.status_code}")
+            return []
+
+        data = r.json()
+
+        logger.info(f"Nodos subscriptos recibidos de D: {data}")
+
+        return data
+
+    except requests.RequestException as e:
+        logger.error(f"No se pudo contactar a D para consultar subscriptos: {e}")
+        return []
+
+
+def iniciar_cliente(host_D, puerto_D, mi_host, mi_puerto, logger):
+
+    nodos_subscriptos = registrarse_en_D(host_D, puerto_D, mi_host, mi_puerto, logger)
+
+    time.sleep(1)
+
+    while True:
+
+        if nodos_subscriptos:
+            logger.info(f"Nodos subscriptos actualmente en D: {nodos_subscriptos}")
+        
+            # conectarse a todos los nodos existentes
+            for nodo in nodos_subscriptos["nodos"]:
+                if (nodo["ip"] == mi_host and nodo["puerto"] == mi_puerto):
+                    continue
+
+                host = nodo["ip"]
+                puerto = nodo["puerto"]
+
+                threading.Thread(
+                    target=saludar,
+                    args=(host, puerto, logger),
+                    daemon=True
+                ).start()
+        
+        time.sleep(60)
+
+        nodos_subscriptos = consultar_subscriptos_en_D(host_D, puerto_D, logger)
+
+    return nodos
+
 # ---------------- MAIN ----------------
 
 def main():
@@ -180,25 +233,8 @@ def main():
     
     # iniciar servidor en puerto aleatorio
     mi_puerto = iniciar_servidor(mi_host, logger)
-    
-    time.sleep(1)
-
-    # registrarse en D
-    nodos = registrarse_en_D(host_D, puerto_D, mi_host, mi_puerto, logger)
-
-    # conectarse a todos los nodos existentes
-    for nodo in nodos["nodos"]:
-        if (nodo["ip"] == mi_host and nodo["puerto"] == mi_puerto):
-            continue
-
-        host = nodo["ip"]
-        puerto = nodo["puerto"]
-
-        threading.Thread(
-            target=saludar,
-            args=(host, puerto, logger),
-            daemon=True
-        ).start()
+        
+    iniciar_cliente(host_D, puerto_D, mi_host, mi_puerto, logger)
 
     try:
         while True:

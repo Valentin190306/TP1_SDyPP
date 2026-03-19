@@ -17,8 +17,8 @@ logger = configurar_logging(
     archivo_log=ruta_log("hit7_nodo_d.log")
 )
 
-RUTA_SIG_SLOT = ruta_log("sig_slot.json")
-RUTA_SLOT_ACTUAL = ruta_log("slot_actual.json")
+RUTA_NODOS_SUBSCRIPTOS = ruta_log("nodos_subscriptos.json")
+RUTA_NODOS_EN_ESPERA = ruta_log("nodos_en_espera.json")
 
 def guardar_json(ruta, datos):
     with open(ruta, "w", encoding="utf-8") as f:
@@ -33,24 +33,27 @@ def cargar_json(ruta):
 
 
 def rotar_slots():
-    global slot_actual, sig_slot
+    global nodos_esperando, nodos_subcriptos
 
     while True:
         time.sleep(60)
 
-        slot_actual = sig_slot
-        sig_slot = {}
-
-        guardar_json(RUTA_SLOT_ACTUAL, slot_actual)
-        guardar_json(RUTA_SIG_SLOT, sig_slot)
+        with nodos_lock:
+            nodos_subcriptos |= nodos_esperando
+            nodos_esperando = {} 
+            
+            guardar_json(RUTA_NODOS_EN_ESPERA, nodos_esperando)
+            guardar_json(RUTA_NODOS_SUBSCRIPTOS, nodos_subcriptos)
 
         logger.info("Rotación de ventana ejecutada. Nuevo slot_actual cargado.")
+
 
 app = Flask(__name__)
 
 # registro en RAM
-slot_actual = {}
-sig_slot = {}
+nodos_esperando = {}
+nodos_subcriptos = {}
+nodos_lock = threading.Lock()  # para asegurar acceso concurrente seguro a las estructuras de nodos
 
 # tiempo de inicio del servicio
 start_time = time.time()
@@ -69,36 +72,45 @@ def register():
 
     clave = f"{ip}:{puerto}"
 
-    # registrar el nodo nuevo
-    sig_slot[clave] = {
-        "ip": ip,
-        "puerto": puerto
-    }
+    with nodos_lock:
+        # registrar el nodo nuevo
+        nodos_esperando[clave] = {
+            "ip": ip,
+            "puerto": puerto
+        }
 
-    logger.info(f"Nuevo nodo registrado: {sig_slot[clave]}")
-
-    return jsonify({
-        "nodos": list(sig_slot.values())
-    })
+    logger.info(f"Nuevo nodo registrado en espera: {nodos_esperando[clave]}")
     
+    return jsonify({
+        "nodos": list(nodos_subcriptos.values())
+    })
+
+
+@app.route("/nodos_subscriptos", methods=["GET"])    
+def nodos_subscriptos():
+    with nodos_lock:
+        return jsonify({"nodos": list(nodos_subcriptos.values())})
+
 
 @app.route("/health", methods=["GET"])
 def health():
 
     uptime = time.time() - start_time
 
-    logger.info(f"Salud del servicio - Uptime: {uptime}, Nodos en servicio: {len(slot_actual)}, Nodos esperando registro: {len(sig_slot)}")
+    logger.info(f"Salud del servicio - Uptime: {uptime}, Nodos en servicio: {len(nodos_esperando)}, Nodos esperando registro: {len(nodos_subcriptos)}")
 
-    return jsonify({
-        "status": "ok",
-        "nodos_registrados_actual": len(slot_actual),
-        "nodos_registrados_siguiente": len(sig_slot),
-        "uptime": uptime
-    })
+    with nodos_lock:
+        return jsonify({
+            "status": "ok",
+            "nodos_en_espera": len(nodos_esperando),
+            "nodos_registrados": len(nodos_subcriptos),
+            "uptime": uptime
+        })
+
 
 def iniciar_servicio():
-    guardar_json(RUTA_SLOT_ACTUAL, slot_actual)
-    guardar_json(RUTA_SIG_SLOT, sig_slot)
+    guardar_json(RUTA_NODOS_EN_ESPERA, nodos_esperando)
+    guardar_json(RUTA_NODOS_SUBSCRIPTOS, nodos_subcriptos)
 
     rotador = threading.Thread(target=rotar_slots, daemon=True)
     rotador.start()
