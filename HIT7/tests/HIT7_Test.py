@@ -66,6 +66,11 @@ def validar_respuesta_json(respuesta):
 
 def test_recepcion_registro_nodos():
     for id in range(1, 4):
+        
+        if (id == 3):
+            print("[INFO] esperando rotación para que C3 se registre en la siguiente ventana...")
+            time.sleep(65)
+        
         nombre_nodo = f"HIT7_NodoC_{id}"
         logger = configurar_logging(nombre_nodo, ruta_log(f"hit7_nodo_c_{id}.log"))
 
@@ -77,41 +82,19 @@ def test_recepcion_registro_nodos():
 
         print(f"[OK] Registro recibido en Nodo C{id}: {respuesta}")
 
+    nodos = respuesta["nodos"]
+    
+    assert len(nodos) == 2, f"Esperaba 2 nodos registrados en D, pero recibí {len(nodos)}"
 
-   
-def test_ventanas_inscripcion():
 
-    print("[INFO] esperando primera rotación del sistema...")
-    time.sleep(65)
-
-    logger1 = configurar_logging("NodoC1", ruta_log("hit7_nodo_c_1.log"))
-    logger2 = configurar_logging("NodoC2", ruta_log("hit7_nodo_c_2.log"))
-    logger3 = configurar_logging("NodoC3", ruta_log("hit7_nodo_c_3.log"))
-
-    r1 = registrarse_en_D(HOST_D, PORT_D, HOST_C, puertos[1], logger1)
-    r2 = registrarse_en_D(HOST_D, PORT_D, HOST_C, puertos[2], logger2)
-
-    print("[INFO] C1 y C2 registrados")
-
-    time.sleep(65)
-
-    r3 = registrarse_en_D(HOST_D, PORT_D, HOST_C, puertos[3], logger3)
-
-    nodos = r3["nodos"]
-
-    assert len(nodos) == 2
 
 if __name__ == "__main__":
     esperar_registry()
     arrancar_nodos()
     
     print("=" * 50)
-    print("Test 1: los nodos se registran en D y reciben la lista de nodos existentes")
+    print("Test: los nodos se registran en D en diferentes ventanas y reciben la lista de nodos registrados correctamente")
     test_recepcion_registro_nodos()
-
-    print("=" * 50)
-    print("Test 3: sistema de ventanas de inscripción, espere 2 minutos para que se completen las rotaciones")
-    test_ventanas_inscripcion()
 
     print("=" * 50)
     print("Todos los tests pasaron OK")
