@@ -14,7 +14,7 @@ Compare en su informe: el tamaño de los mensajes en bytes (JSON vs protobuf), l
 Software necesario para ejecutar el proyecto.
 
 * Sistema operativo: Linux / macOS / Windows
-* Lenguaje: Python 3.x
+* Lenguaje: Python 3.13.5
 * Dependencias: especificadas en `requirements.txt`
 
 Comandos según sistema operativo:
@@ -28,6 +28,8 @@ Comandos según sistema operativo:
 ---
 
 ### 2. Estructura de fichero del ejercicio
+
+Descripción breve de los archivos necesarios para ejecutar el HIT.
 
 ```
 HIT8/
@@ -94,6 +96,12 @@ pip install -r requirements.txt
 
 Con el entorno virtual activado, generar los stubs desde el archivo `.proto`:
 
+Linux / macOS
+```bash
+python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. saludo.proto
+```
+
+Windows
 ```bash
 python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. saludo.proto
 ```

@@ -27,7 +27,7 @@ Comandos según sistema operativo:
 Descripción breve de los archivos necesarios para ejecutar el HIT.
 
 ```
-HIT6/
+HIT5/
 ├── logs/
 ├── tests/
 |   └── HIT5_Test.py

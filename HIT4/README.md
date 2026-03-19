@@ -10,7 +10,7 @@ Refactoriza el código de los programas A y B en un único programa, que funcion
 Software necesario para ejecutar el proyecto.
 
 * Sistema operativo: Linux / macOS / Windows
-* Lenguaje: Python 3.x
+* Lenguaje: Python 3.13.5
 
 Comandos según sistema operativo:
 
@@ -23,6 +23,8 @@ Comandos según sistema operativo:
 ---
 
 ### 2. Estructura de fichero del ejercicio
+
+Descripción breve de los archivos necesarios para ejecutar el HIT.
 
 ```
 HIT4/

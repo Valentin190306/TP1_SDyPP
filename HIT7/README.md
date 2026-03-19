@@ -32,7 +32,7 @@ Descripción breve de los archivos necesarios para ejecutar el HIT.
 HIT7/
 ├── logs/
 ├── tests/
-|   └── HIT6_Test.py
+|   └── HIT7_Test.py
 ├── venv/
 ├── HIT7_NodoC.py
 ├── HIT7_NodoD.py
