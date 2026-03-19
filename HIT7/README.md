@@ -130,7 +130,7 @@ python HIT7_NodoC.py 127.0.0.1 8000
 Cada nodo C:
 1. Inicia escucha en un puerto aleatorio
 2. Se registra en el nodo D
-3. Recibe la lista de nodos existentes
+3. Recibe la lista de nodos subcriptos en ventanas pasadas, cada 60 segundos consulta por actualizaciones
 4. Envía saludo a los demás nodos
 
 Para probar múltiples nodos, ejecutar el comando en distintas terminales.
@@ -152,10 +152,6 @@ python tests/HIT7_Test.py
 
 ### 7. Resultado esperado del test
 
-* Los 3 nodos C se registran en el nodo D.
-* El registry devuelve la lista de nodos existentes.
-* Cada nodo C se conecta con los demás nodos.
-* El endpoint /health devuelve el estado del servicio.
 * El registry registra los nodos C en ventanas de tiempo diferentes dependiendo de la fecha de registro
 
 ---
