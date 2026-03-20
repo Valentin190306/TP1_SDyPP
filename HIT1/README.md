@@ -99,3 +99,7 @@ python tests/HIT1_Test.py
 * El test verifica que la respuesta sea correcta.
 
 ---
+
+## Conclusión
+
+Primer acercamiento a la lógica de uso de mensajes TCP por medio de sockets en una arquitectura cliente - servidor. Un proceso se dedicara a escuchar peticiones de conexión, y el otro buscara conectarse y enviar un mensaje. El proceso que escucha puede responder al mensaje, pero siempre escucha o espera.

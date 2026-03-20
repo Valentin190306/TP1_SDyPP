@@ -100,3 +100,8 @@ python tests/HIT2_Test.py
 * B cae (simulado) y A se reconecta automáticamente.
 * A envía un nuevo mensaje y recibe respuesta correctamente.
 
+---
+
+## Conclusión
+
+Implementación de lógica de reconexión y control de errores de conectividad para mantenimiento de la conexión entre procesos remotos ante desconexiones imprevistas. El cliente debe reaccionar ante la caida de la conexión y reintentar la conexión habiendo pasado un lapso de tiempo.

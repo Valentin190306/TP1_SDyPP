@@ -90,3 +90,8 @@ python tests/HIT4_Test.py
 * Ambos canales funcionan simultáneamente.
 * El servidor sigue respondiendo después de que el cliente se desconecta (reconexión).
 
+--- 
+
+## Conclusión
+
+Se logró concentrar la lógica del servidor y cliente en un solo proceso, el cual puede esperar por conexiones e intentar conectarse con otro proceso similar permitiendo el intercambio de mensajes de forma paralela. Para que esto ocurra dos nodos deben tener la información de dirección IP y puerto para poder conectarse entre sí.

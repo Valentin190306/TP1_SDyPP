@@ -193,3 +193,8 @@ Medidas de latencia:
 ```bash
 Latencia gRPC — promedio: 1.072ms | min: 0.959ms | max: 1.32ms
 ```
+## Conclusión
+
+## Conclusión
+
+Retornamos al HIT5 para reimplementar el formato de los mensajes usando serialización binaria. Pero ahora los nodos utilizan código stub generado por el programa "protoc". Al especificarse un formato de mensajes en el .proto, Protoc genera el código necesario para interpretar los mensajes serializados. Entonces, aprovechando la capacidad de multiplexación de HTTP/2 y el menor tamaño de codificación de los mensajes, se puede lograr comunicación con menor latencia y mensajes más pequeños.

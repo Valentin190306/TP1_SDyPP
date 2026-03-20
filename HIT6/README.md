@@ -167,3 +167,7 @@ Ejemplo de respuesta del endpoint /health:
 }
 ```
 ---
+
+## Conclusión
+
+El nuevo nodo D tiene el proposito particular de almacenar la información de conexión de todos los nodos C que deciden ser visibles ante el resto de nodos C. Para que un nodo C no tenga que almacenar la información de todos los nodos C para permitir la comunicación, recurre al servicio del nodo D por medio de una URL para dar a conocer sus datos propios y acceder a la lista de nodos C disponibles. Los nodos C entonces consumen la llamada API del nodo D. Entonces los nodos C solo deben conocer la dirección IP y el puerto del servidor web para realizar la consulta HTTP y tener acceso a todos los demas nodos C.

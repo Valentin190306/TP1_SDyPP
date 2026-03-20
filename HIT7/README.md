@@ -155,3 +155,8 @@ python tests/HIT7_Test.py
 * El registry registra los nodos C en ventanas de tiempo diferentes dependiendo de la fecha de registro
 
 ---
+
+## Conclusión
+
+El nodo D ahora tiene una ventana de tiempo en el cual los nodos C se conectan y esperan para ser adjuntados a la lista de nodos registrados. Solo los nodos subscriptos (en la lista) son los comunicados a los nodos C. La lista de nodos subscriptos entonces se actualiza, al terminar la ventana de tiempo, con los nodos en espera.
+Los nodos ahora tienen el comportamiento de actualizar su propias listas (pasado la duración de la ventana de tiempo) para poder conectarse a los nuevos nodos subscriptos.

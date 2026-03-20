@@ -85,3 +85,7 @@ python tests/HIT5_Test.py
 * Los saludos se realizan con mensajes con formato JSON.
 
 ---
+
+## Conclusión
+
+Los mensajes ahora se serializan con un formato JSON. Ambos nodos ahora se pueden comunicar en un lenguaje común.

@@ -101,3 +101,8 @@ python tests/HIT3_Test.py
 * B sigue funcionando y acepta una nueva conexión de A.
 * A envía un nuevo mensaje y recibe respuesta correctamente.
 
+---
+
+## Conclusión
+
+Se logró implementar el comportamiento que logra la persistencia del servicio a pesar de la terminación del cliente. El servidor constantemente esperara nuevas conexiones aunque el cliente se desconecte.
